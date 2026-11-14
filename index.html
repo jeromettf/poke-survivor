@@ -192,10 +192,10 @@ const AREAS=[
 ];
 const COMMON=['hpup','taurine','saponin','alkaloid','ppup','widelens','expshare','leftovers','radar'];
 const PARTNERS={
- 4:{line:[4,5,6],evo:[10,22],ty:'fire',sig:'ember',ult:'블래스트번',tr:'공격력 +10%',pool:['ember','flamethrower','firespin','fireblast','dragonrage','metalclaw','swift'],items:COMMON.concat(['charcoal','dragonfang','metalcoat','silkscarf'])},
- 7:{line:[7,8,9],evo:[10,22],ty:'water',sig:'watergun',ult:'하이드로캐논',tr:'최대 체력 +25%',pool:['watergun','bubblebeam','icebeam','hydropump','rapidspin','aquatail'],items:COMMON.concat(['mysticwater','nevermeltice','silkscarf'])},
- 1:{line:[1,2,3],evo:[10,22],ty:'grass',sig:'razorleaf',ult:'하드플랜트',tr:'초당 체력 회복 +1',pool:['razorleaf','leechseed','vinewhip','poisonpowder','solarbeam','petaldance'],items:COMMON.concat(['miracleseed','poisonbarb'])},
- 25:{line:[25,26],evo:[18],ty:'electric',sig:'thundershock',ult:'볼트태클',tr:'이동 속도 +12%',lock:1,pool:['thundershock','thunderbolt','thunder','discharge','irontail','swift'],items:COMMON.concat(['lightball','metalcoat','silkscarf'])},
+ 4:{line:[4,5,6],evo:[8,18],ty:'fire',sig:'ember',ult:'블래스트번',tr:'공격력 +10%',pool:['ember','flamethrower','firespin','fireblast','dragonrage','metalclaw','swift'],items:COMMON.concat(['charcoal','dragonfang','metalcoat','silkscarf'])},
+ 7:{line:[7,8,9],evo:[8,18],ty:'water',sig:'watergun',ult:'하이드로캐논',tr:'최대 체력 +25%',pool:['watergun','bubblebeam','icebeam','hydropump','rapidspin','aquatail'],items:COMMON.concat(['mysticwater','nevermeltice','silkscarf'])},
+ 1:{line:[1,2,3],evo:[8,18],ty:'grass',sig:'razorleaf',ult:'하드플랜트',tr:'초당 체력 회복 +1',pool:['razorleaf','leechseed','vinewhip','poisonpowder','solarbeam','petaldance'],items:COMMON.concat(['miracleseed','poisonbarb'])},
+ 25:{line:[25,26],evo:[14],ty:'electric',sig:'thundershock',ult:'볼트태클',tr:'이동 속도 +12%',lock:1,pool:['thundershock','thunderbolt','thunder','discharge','irontail','swift'],items:COMMON.concat(['lightball','metalcoat','silkscarf'])},
 };
 const TPL={
  shot:i=>({d:12+3*i,cd:0.8-0.05*i,n:[1,2,2,3,4][i]}),
@@ -416,12 +416,12 @@ const iv=id=>(R.items[id]||0);
 const curSp=()=>PARTNERS[R.pid].line[R.stage];
 const stIdx=()=>R.pid==25&&R.stage==1?2:R.stage;
 const bl=k=>(R.bless[k]||0);
-function maxHp(){return Math.round((100+R.lv*4)*[1,1.2,1.45][stIdx()]*(1+iv('hpup')*0.15+bl('hp')*0.2)*(R.pid==7?1.25:1)+S.up.hp*10);}
-function dmgMul(ty){let typ=0;for(const id in R.items)if(ITEMS[id].ty===ty)typ+=R.items[id]*0.15;return (1+R.lv*0.025)*[1,1.3,1.65][stIdx()]*(1+iv('taurine')*0.08+S.up.atk*0.05+typ+bl('atk')*0.12)*(R.pid==4?1.1:1)*(SP[curSp()][1].includes(ty)?1.2:1);}
+function maxHp(){return Math.round((100+R.lv*7)*[1,1.2,1.45][stIdx()]*(1+iv('hpup')*0.15+bl('hp')*0.2)*(R.pid==7?1.25:1)+S.up.hp*10);}
+function dmgMul(ty){let typ=0;for(const id in R.items)if(ITEMS[id].ty===ty)typ+=R.items[id]*0.15;return (1+R.lv*0.045)*[1,1.3,1.65][stIdx()]*(1+iv('taurine')*0.08+S.up.atk*0.05+typ+bl('atk')*0.12)*(R.pid==4?1.1:1)*(SP[curSp()][1].includes(ty)?1.2:1);}
 const areaMul=()=>1+iv('widelens')*0.1+bl('area')*0.12,cdMul=()=>Math.max(0.4,1-iv('ppup')*0.06-bl('cd')*0.08);
 const pickR=()=>85*(1+iv('radar')*0.3+S.up.mag*0.1);
 const pSpeed=()=>150*(1+iv('alkaloid')*0.08+S.up.spd*0.03+bl('spd')*0.1)*(R.pid==25?1.12:1);
-const need=l=>Math.floor(5+l*2.6+Math.pow(l,1.3));
+const need=l=>Math.floor(6+l*3.5+Math.pow(l,1.62));
 const mvName=id=>R.moves[id]>=6?MOVES[id].evo[1]:MOVES[id].n;
 
 function startRun(pid,ai){
@@ -453,10 +453,10 @@ $('#ultB').addEventListener('click',()=>useUlt());
 // ═══════════ 적 ═══════════
 function spawnEnemy(sp,tier,x,y){
   const lvE=2+Math.floor(R.t/(25-R.ai*1.8));const p=tier==='boss'?SP[sp][2]:0.8+(SP[sp][2]-0.8)*0.3;
-  const am=1+R.ai*0.08,dm2=(1+R.ai*0.12)*Math.min(1,0.5+R.t/240)*(1+Math.max(0,R.t-180)/160)*(R.endless?1+(R.t-R.clearT)/90:1),late=(1+Math.max(0,R.t-180)/85)*(R.endless?1+(R.t-R.clearT)/60:1);
+  const am=1+R.ai*0.08,dm2=(1+R.ai*0.12)*Math.min(1,0.5+R.t/240)*(1+Math.max(0,R.t-180)/160)*(R.endless?1+(R.t-R.clearT)/90:1),late=(1+Math.max(0,R.t-180)/120)*(R.endless?1+(R.t-R.clearT)/60:1);
   const hm=tier==='boss'?380:tier==='mid'?60:tier==='elite'?9:1;const fh=PMD[sp].w[2];
   const sc=tier==='boss'?Math.min(3.2,250/fh):tier==='mid'?Math.min(2.9,200/fh):tier==='elite'?2.6:1.8;
-  const e={sp,tier,x,y,lv:lvE,mhp:(6+lvE*4.2)*p*hm*am*late,dmg:(2+lvE*0.6)*p*dm2*(tier==='boss'?1.6:tier==='mid'?1.5:tier==='elite'?1.4:1),spd:(tier==='boss'?62:tier==='mid'?66:tier==='elite'?58:rand(52,72))*(0.85+p*0.15),
+  const e={sp,tier,x,y,lv:lvE,mhp:(6+lvE*3.8)*p*hm*am*late,dmg:(2+lvE*0.5)*p*dm2*(tier==='boss'?1.6:tier==='mid'?1.5:tier==='elite'?1.4:1),spd:(tier==='boss'?62:tier==='mid'?66:tier==='elite'?58:rand(52,72))*(0.85+p*0.15),
     sc,r:clamp(PMD[sp].w[1]*sc*0.28,9,48),t:Math.random()*2,row:0,flash:0,slow:0,hcd:0,hits:{},kb:{x:0,y:0}};
   e.role=(tier==='n'||tier==='elite')?(ROLE[sp]||''):'';e.weak=eff(PARTNERS[R.pid].ty,SP[sp][1])>1;e.side=Math.random()<0.5?1:-1;e.shT=rand(1,3);e.dT=rand(1,3);e.tpT=rand(3,6);e.dm='';
   if(e.role==='tank'){e.mhp*=2.2;e.spd*=0.7;}if(e.role==='bomb')e.spd*=1.15;if(e.role==='dash')e.spd*=0.9;
@@ -491,7 +491,7 @@ function hitE(e,d,ty,o){
 }
 function killE(e){
   e.dead=true;R.kills++;R.ult=Math.min(100,R.ult+(e.tier==='n'?1.2:10));
-  const v=e.tier==='boss'?0:e.tier==='mid'?60:e.tier==='elite'?25:1+Math.floor(e.lv/12);
+  const v=e.tier==='boss'?0:e.tier==='mid'?60:e.tier==='elite'?25:1+Math.floor(e.lv/20);
   if(v)R.gems.push({x:e.x,y:e.y,v,mag:false});
   if(e.tier==='mid'){R.drops.push({x:e.x+20,y:e.y,k:'chest',n:3});R.drops.push({x:e.x-24,y:e.y+10,k:'berry'});R.mid=null;toast('우두머리를 쓰러뜨렸다! 큰 보물상자');}
   else if(e.tier==='boss'){}
