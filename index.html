@@ -465,26 +465,42 @@ function sfx(k,x){if(!AU.c||!S.set.sfx)return;const now=performance.now();const 
   case 'win':[523,523,523,659,784,1047].forEach((f,i)=>tone(f,0.16,'square',0.1,null,i*0.11));break;
   case 'coin':tone(988,0.05,'square',0.06);tone(1319,0.08,'square',0.06,null,0.05);break;
   }}
-const BGM={on:false,step:0,next:0,timer:null,song:null};
-const PRG={maj:[[0,4,7],[7,11,14],[9,12,16],[5,9,12]],min:[[0,3,7],[8,12,15],[3,7,10],[10,14,17]],hero:[[0,4,7],[8,12,15],[10,14,17],[7,11,14]],calm:[[0,4,7],[9,12,16],[5,9,12],[7,11,14]],dark:[[0,3,7],[5,8,12],[8,12,15],[7,11,14]]};
-const MELS=[[0,null,2,null,1,0,null,2,0,null,1,null,2,1,0,null],[2,null,1,2,null,0,1,null,2,null,3,null,2,null,1,null],[0,0,null,1,2,null,1,0,null,2,null,3,2,null,null,null],[3,null,2,null,1,null,2,null,0,null,1,2,1,null,0,null]];
-const SONGS={
- title:{p:'calm',root:0,tempo:0.17,mel:MELS[1],lead:'triangle',bass:'q',drum:0.4},
- ending:{p:'calm',root:5,tempo:0.2,mel:MELS[3],lead:'triangle',bass:'q',drum:0.2},
- boss:{p:'dark',root:-3,tempo:0.11,mel:MELS[2],lead:'square',bass:'e',drum:1.2},
- league:{p:'hero',root:2,tempo:0.12,mel:MELS[1],lead:'square',bass:'e',drum:1},
- lboss:{p:'hero',root:-1,tempo:0.105,mel:MELS[2],lead:'sawtooth',bass:'e',drum:1.3},
-};
-function fieldSong(ai){return {p:[0,1,1,1,0,1,1,1][ai]?'min':'maj',root:[0,-3,2,-5,4,-2,-7,1][ai],tempo:0.14,mel:MELS[ai%4],lead:'square',bass:'q',drum:0.8};}
-function bgmStart(key,boss){bgmStop();if(!AU.c)return;let sg;if(typeof key==='string')sg=SONGS[key];else if(AREAS[key]&&AREAS[key].league)sg=boss?SONGS.lboss:SONGS.league;else sg=boss?SONGS.boss:fieldSong(key||0);
-  BGM.song=sg;BGM.on=true;BGM.step=0;BGM.next=AU.c.currentTime+0.06;BGM.timer=setInterval(bgmTick,40);}
+// ── 음악: 작곡 데이터(음표)를 스텝 시퀀서로 연주
+const SONGS={"title":{"bpm":96,"mel":[[0,7,4],[4,12,4],[8,16,2],[10,14,2],[12,12,4],[16,11,4],[20,14,4],[24,19,4],[28,17,2],[30,16,2],[32,16,4],[36,12,4],[40,9,2],[42,11,2],[44,12,4],[48,17,4],[52,16,2],[54,14,2],[56,12,8],[64,7,4],[68,12,4],[72,16,2],[74,14,2],[76,12,2],[78,16,2],[80,19,4],[84,17,2],[86,16,2],[88,14,4],[92,11,4],[96,9,2],[98,12,2],[100,17,4],[104,16,2],[106,14,2],[108,12,4],[112,14,8],[120,11,4],[124,7,4]],"ch":[[0,4,7],[7,11,14],[9,12,16],[5,9,12],[0,4,7],[7,11,14],[5,9,12],[7,11,14]],"len":128,"bass":"long","drum":"soft","lead":"tri","arp":1},"fA":{"bpm":128,"mel":[[0,12,2],[2,7,2],[4,12,2],[6,16,2],[8,19,4],[12,16,4],[16,17,2],[18,16,2],[20,14,2],[22,12,2],[24,9,4],[28,12,4],[32,14,2],[34,11,2],[36,14,2],[38,17,2],[40,23,4],[44,19,4],[48,16,8],[56,12,8],[64,12,2],[66,16,2],[68,12,2],[70,9,2],[72,7,4],[76,12,4],[80,9,2],[82,12,2],[84,17,2],[86,16,2],[88,14,4],[92,12,4],[96,11,2],[98,14,2],[100,11,2],[102,7,2],[104,11,2],[106,14,2],[108,17,2],[110,19,2],[112,19,8]],"ch":[[0,4,7],[5,9,12],[7,11,14],[0,4,7],[9,12,16],[5,9,12],[7,11,14],[7,11,14]],"len":128,"bass":"walk","drum":"beat","lead":"sq","arp":1},"fB":{"bpm":118,"mel":[[0,9,2],[2,12,2],[4,16,2],[6,21,2],[8,19,4],[12,16,4],[16,17,2],[18,12,2],[20,17,2],[22,21,2],[24,24,4],[28,21,4],[32,19,2],[34,16,2],[36,12,2],[38,16,2],[40,19,4],[44,16,4],[48,14,8],[56,11,8],[64,9,2],[66,12,2],[68,16,2],[70,21,2],[72,23,4],[76,24,4],[80,21,4],[84,17,4],[88,12,4],[92,17,4],[96,19,2],[98,17,2],[100,16,2],[102,14,2],[104,11,4],[108,14,4],[112,9,8]],"ch":[[9,12,16],[5,9,12],[0,4,7],[7,11,14],[9,12,16],[5,9,12],[7,11,14],[9,12,16]],"len":128,"bass":"walk","drum":"soft","lead":"sq","arp":1},"fC":{"bpm":140,"mel":[[0,12,1],[2,12,1],[4,16,2],[6,12,2],[8,7,2],[10,12,2],[12,16,4],[16,9,1],[18,9,1],[20,12,2],[22,9,2],[24,16,4],[28,12,4],[32,17,2],[34,16,2],[36,14,2],[38,12,2],[40,14,2],[42,16,2],[44,17,4],[48,19,6],[54,17,2],[56,16,4],[60,14,4],[64,12,1],[66,12,1],[68,16,2],[70,12,2],[72,19,2],[74,24,2],[76,23,4],[80,21,2],[82,19,2],[84,16,2],[86,12,2],[88,16,4],[92,21,4],[96,17,2],[98,21,2],[100,24,2],[102,21,2],[104,19,2],[106,17,2],[108,16,2],[110,14,2],[112,12,8]],"ch":[[0,4,7],[9,12,16],[5,9,12],[7,11,14],[0,4,7],[9,12,16],[5,9,12],[7,11,14]],"len":128,"bass":"walk","drum":"beat","lead":"sq","arp":1},"fD":{"bpm":112,"mel":[[0,9,4],[4,12,4],[8,16,4],[12,14,2],[14,12,2],[16,14,4],[20,17,4],[24,21,4],[28,19,2],[30,17,2],[32,12,4],[36,17,4],[40,21,2],[42,19,2],[44,17,4],[48,16,4],[52,20,4],[56,23,4],[64,21,4],[68,16,4],[72,12,4],[76,9,4],[80,14,2],[82,17,2],[84,21,4],[88,19,2],[90,17,2],[92,14,4],[96,16,2],[98,8,2],[100,11,2],[102,14,2],[104,16,4],[108,20,4],[112,21,8]],"ch":[[9,12,16],[2,5,9],[5,9,12],[4,8,11],[9,12,16],[2,5,9],[4,8,11],[9,12,16]],"len":128,"bass":"long","drum":"soft","lead":"tri","arp":1},"boss":{"bpm":160,"mel":[[0,9,2],[2,9,2],[4,12,2],[6,9,2],[8,16,2],[10,9,2],[12,14,2],[14,12,2],[16,5,2],[18,5,2],[20,9,2],[22,5,2],[24,12,2],[26,5,2],[28,11,2],[30,9,2],[32,7,2],[34,7,2],[36,11,2],[38,7,2],[40,14,2],[42,7,2],[44,12,2],[46,11,2],[48,9,4],[52,16,4],[56,21,4],[60,19,2],[62,16,2],[64,21,2],[66,21,2],[68,24,2],[70,21,2],[72,28,2],[74,21,2],[76,26,2],[78,24,2],[80,17,2],[82,17,2],[84,21,2],[86,17,2],[88,24,2],[90,17,2],[92,23,2],[94,21,2],[96,19,2],[98,17,2],[100,16,2],[102,14,2],[104,12,2],[106,11,2],[108,9,2],[110,7,2],[112,8,4],[116,11,4],[120,16,4],[124,20,4]],"ch":[[9,12,16],[5,9,12],[7,11,14],[9,12,16],[9,12,16],[5,9,12],[7,11,14],[4,8,11]],"len":128,"bass":"drive","drum":"drive","lead":"sq","arp":0},"league":{"bpm":144,"mel":[[0,7,2],[2,12,2],[4,16,2],[6,19,2],[8,24,6],[14,19,2],[16,20,4],[20,15,4],[24,12,4],[28,15,4],[32,17,2],[34,10,2],[36,14,2],[38,17,2],[40,22,4],[44,21,2],[46,22,2],[48,23,8],[56,19,4],[60,14,4],[64,16,2],[66,19,2],[68,24,2],[70,28,2],[72,26,4],[76,24,4],[80,24,4],[84,20,4],[88,15,4],[92,12,4],[96,14,2],[98,17,2],[100,22,2],[102,26,2],[104,24,4],[108,22,4],[112,24,8]],"ch":[[0,4,7],[8,12,15],[10,14,17],[7,11,14],[0,4,7],[8,12,15],[10,14,17],[0,4,7]],"len":128,"bass":"walk","drum":"beat","lead":"sq","arp":1},"lboss":{"bpm":168,"mel":[[0,12,2],[2,12,2],[4,15,2],[6,12,2],[8,19,2],[10,12,2],[12,17,2],[14,15,2],[16,8,2],[18,8,2],[20,12,2],[22,8,2],[24,15,2],[26,8,2],[28,14,2],[30,12,2],[32,10,2],[34,10,2],[36,14,2],[38,10,2],[40,17,2],[42,10,2],[44,15,2],[46,14,2],[48,11,4],[52,14,4],[56,19,4],[60,23,4]],"ch":[[0,3,7],[8,12,15],[10,14,17],[7,11,14]],"len":64,"bass":"drive","drum":"drive","lead":"sq","arp":0},"ending":{"bpm":84,"mel":[[0,9,4],[4,12,4],[8,17,6],[14,16,2],[16,14,4],[20,11,4],[24,7,8],[32,7,4],[36,11,4],[40,16,6],[46,14,2],[48,12,4],[52,16,4],[56,21,8],[64,17,4],[68,16,4],[72,14,4],[76,12,4],[80,11,4],[84,14,4],[88,19,8],[96,16,4],[100,19,4],[104,24,8],[112,24,16]],"ch":[[5,9,12],[7,11,14],[4,7,11],[9,12,16],[2,5,9],[7,11,14],[0,4,7],[0,4,7]],"len":128,"bass":"long","drum":"none","lead":"tri","arp":1}};
+const FIELD=[['fA',0],['fB',0],['fC',2],['fD',0],['fA',5],['fD',-3],['fC',-2],['fB',-5]];
+const BGM={on:false,step:0,next:0,timer:null,sg:null,tr:0,idx:null,loopRest:false};
+let PULSE=null,DLY=null;
+function busFx(){const c=AU.c;if(!PULSE){const n=24,re=new Float32Array(n),im=new Float32Array(n);for(let k=1;k<n;k++)re[k]=2/(k*Math.PI)*Math.sin(k*Math.PI*0.25);PULSE=c.createPeriodicWave(re,im);}
+  if(!DLY){DLY=c.createDelay(1);const fb=c.createGain(),wet=c.createGain();fb.gain.value=0.28;wet.gain.value=0.35;DLY.connect(fb);fb.connect(DLY);DLY.connect(wet);wet.connect(AU.b);}}
+const mf=s=>261.63*Math.pow(2,s/12);
+function env(g,t,a,v,dur,rel){g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(v,t+a);g.gain.setValueAtTime(v,t+Math.max(a,dur-rel));g.gain.exponentialRampToValueAtTime(0.0001,t+dur+0.02);}
+function vLead(t,f,dur,kind){const c=AU.c,g=c.createGain();g.connect(AU.b);const send=c.createGain();send.gain.value=0.35;g.connect(send);send.connect(DLY);
+  const tri=kind==='tri';const n=tri?1:2;for(let k=0;k<n;k++){const o=c.createOscillator();o.type=tri?'triangle':'square';o.frequency.value=f;o.detune.value=k?8:0;o.connect(g);
+    if(dur>0.3){const l=c.createOscillator(),lg=c.createGain();l.frequency.value=5.5;lg.gain.setValueAtTime(0,t);lg.gain.linearRampToValueAtTime(f*0.007,t+0.25);l.connect(lg);lg.connect(o.frequency);l.start(t);l.stop(t+dur+0.05);}
+    o.start(t);o.stop(t+dur+0.05);}
+  env(g,t,0.012,tri?0.16:0.05,dur,0.06);}
+function vArp(t,f,dur){const c=AU.c,o=c.createOscillator(),g=c.createGain();o.setPeriodicWave(PULSE);o.frequency.value=f;o.connect(g);g.connect(AU.b);env(g,t,0.005,0.035,dur,dur*0.6);o.start(t);o.stop(t+dur+0.05);}
+function vBass(t,f,dur){const c=AU.c,o=c.createOscillator(),g=c.createGain();o.type='triangle';o.frequency.value=f;o.connect(g);g.connect(AU.b);env(g,t,0.006,0.36,dur,dur*0.5);o.start(t);o.stop(t+dur+0.05);}
+function vNoise(t,type,fq,v,d){const c=AU.c;if(!AU.nb)noise(0.01,0.0001,100);const s=c.createBufferSource();s.buffer=AU.nb;const f=c.createBiquadFilter();f.type=type;f.frequency.value=fq;const g=c.createGain();g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(0.0001,t+d);s.connect(f);f.connect(g);g.connect(AU.b);s.start(t);s.stop(t+d+0.02);}
+function vKick(t){const c=AU.c,o=c.createOscillator(),g=c.createGain();o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(42,t+0.12);g.gain.setValueAtTime(0.55,t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.16);o.connect(g);g.connect(AU.b);o.start(t);o.stop(t+0.18);}
+function vSnare(t){vNoise(t,'bandpass',1900,0.22,0.13);const c=AU.c,o=c.createOscillator(),g=c.createGain();o.type='triangle';o.frequency.setValueAtTime(220,t);o.frequency.exponentialRampToValueAtTime(140,t+0.06);g.gain.setValueAtTime(0.18,t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.08);o.connect(g);g.connect(AU.b);o.start(t);o.stop(t+0.1);}
+function bgmStart(key,boss){bgmStop();if(!AU.c)return;busFx();let sg,tr=0;
+  if(typeof key==='string')sg=SONGS[key];else if(AREAS[key]&&AREAS[key].league)sg=SONGS[boss?'lboss':'league'];else if(boss){sg=SONGS.boss;tr=[0,-2,1,-1,2,-3,0,-4][key%8];}else{const f=FIELD[(key||0)%8];sg=SONGS[f[0]];tr=f[1];}
+  if(!sg)return;BGM.sg=sg;BGM.tr=tr;BGM.idx={};for(const m of sg.mel)BGM.idx[m[0]]=m;BGM.on=true;BGM.step=0;BGM.next=AU.c.currentTime+0.08;BGM.timer=setInterval(bgmTick,40);}
 function bgmStop(){BGM.on=false;clearInterval(BGM.timer);}
-function bgmTick(){const c=AU.c;if(!c||!BGM.on)return;const G=BGM.song;while(BGM.next<c.currentTime+0.2){const s=BGM.step,bar=Math.floor(s/16)%4,i=s%16,ch=PRG[G.p][bar],base=110*Math.pow(2,G.root/12),t0=Math.max(0,BGM.next-c.currentTime),F=n=>base*Math.pow(2,n/12),T=G.tempo;
-  if(G.bass==='e'){if(i%2===0)tone(F(ch[i%4===0?0:2]-12),T*1.6,'triangle',0.3,null,t0,AU.b);}else{if(i%4===0)tone(F(ch[0]-12),T*3.4,'triangle',0.32,null,t0,AU.b);if(i%4===2)tone(F(ch[2]-12),T*1.6,'triangle',0.2,null,t0,AU.b);}
-  if(i%2===1)tone(F(ch[(i>>1)%3]+12),T*1.3,'square',0.03,null,t0,AU.b);
-  const m=G.mel[(i+bar*3)%16];if(m!==null&&(Math.floor(s/64)%2===1||G===SONGS.title||G===SONGS.ending)){const n=m===3?ch[0]+12:ch[m];tone(F(n+24),T*1.9,G.lead,G.lead==='triangle'?0.09:0.045,null,t0,AU.b);}
-  if(G.drum){if(i%4===2)noise(0.025,0.05*G.drum,7000,t0,AU.b);if(i%8===4)noise(0.06,0.07*G.drum,1500,t0,AU.b);if(G.drum>1&&i%4===0)tone(90,0.08,'sine',0.25,40,t0,AU.b);}
-  BGM.next+=T;BGM.step++;}}
+function bgmTick(){const c=AU.c;if(!c||!BGM.on)return;const G=BGM.sg,sd=60/G.bpm/4,tr=BGM.tr;
+  while(BGM.next<c.currentTime+0.15){const t=Math.max(BGM.next,c.currentTime),st=BGM.step,s=st%G.len,loop=Math.floor(st/G.len),bar=Math.floor(s/16),i=s%16,ch=G.ch[bar%G.ch.length];
+    const leadOn=!(G.drum!=='drive'&&G.len>=128&&loop%3===2);
+    const m=BGM.idx[s];if(m&&leadOn)vLead(t,mf(m[1]+tr),m[2]*sd*0.95,G.lead);
+    if(G.arp&&i%2===0)vArp(t,mf(ch[(i/2)%3]+tr+(G.lead==='tri'?0:12)),sd*1.6);
+    const R0=ch[0]+tr-24;
+    if(G.bass==='long'){if(i===0)vBass(t,mf(R0),sd*7.5);if(i===8)vBass(t,mf(ch[2]+tr-24),sd*7.5);}
+    else if(G.bass==='walk'){if(i%4===0){const seq=[R0,ch[2]+tr-24,R0+12,ch[1]+tr-24];vBass(t,mf(seq[i/4]),sd*3.4);}}
+    else if(G.bass==='drive'){if(i%2===0)vBass(t,mf(i%4===0?R0:R0+12),sd*1.7);}
+    if(G.drum==='soft'){if(i===0)vKick(t);if(i%4===2)vNoise(t,'highpass',7000,0.05,0.03);}
+    else if(G.drum==='beat'){if(i===0||i===10)vKick(t);if(i===4||i===12)vSnare(t);if(i%2===0)vNoise(t,'highpass',7500,0.045,0.03);}
+    else if(G.drum==='drive'){if(i%4===0)vKick(t);if(i===4||i===12)vSnare(t);vNoise(t,'highpass',8000,i%2?0.03:0.055,0.025);}
+    BGM.next+=sd;BGM.step++;}}
 document.addEventListener('pointerdown',()=>{const first=!AU.c;auInit();if(first&&state==='menu'&&S.set.bgm&&$('#ov').dataset.k!=='boot')bgmStart('title');},{capture:true});
 
 // ═══════════ 저장 ═══════════
@@ -730,6 +746,7 @@ function update(dt){
     else if(it.k==='magnet'){for(const g of R.gems)g.mag=true;toast('자석! 경험치를 모두 끌어당긴다');}
     else if(it.k==='chest'){R.chests.push(it.n||1);}}
   for(const sh of R.shrines){if(sh.done)continue;const inn=dist(sh,P)<70;const was=sh.ch;sh.ch=inn?Math.min(1,sh.ch+dt/4*(hb(4)?1.4:1)):Math.max(0,sh.ch-dt/10);if(inn&&was===0)toast('사당에 머무르면 축복을 받는다');if(sh.ch>=1){sh.done=true;R.blessQ++;sfx('chest');for(let i=0;i<20;i++)R.fx.push({k:'p',x:sh.x,y:sh.y-40,vx:rand(-150,150),vy:rand(-200,50),life:0.6,ml:0.6,c:'#e0c0ff',s:4});}}
+  if(R.fx.length>650)R.fx.splice(0,R.fx.length-650);
   for(let i=R.fx.length-1;i>=0;i--){const f=R.fx[i];f.life-=dt;if(f.k==='p'){f.x+=f.vx*dt;f.y+=f.vy*dt;f.vx*=0.9;f.vy*=0.9;}if(f.life<=0)R.fx.splice(i,1);}
   for(let i=R.tx.length-1;i>=0;i--){const t=R.tx[i];t.life-=dt;t.y-=30*dt;if(t.life<=0)R.tx.splice(i,1);}
   if(P.hp<=0){if(R.rev>0){R.rev--;P.hp=maxHp()*0.5;P.inv=2;for(const e of R.en)if(e.tier!=='boss'&&dist(e,P)<300)hitE(e,9e9,'normal');banner('기력의조각','부활',1.5);sfx('evo');}else{loseRun();return;}}
@@ -885,7 +902,7 @@ function home(){
   ${goalHTML()}
   <div class="menu"><button class="pb" onclick="sfx('click');prep()">모험 시작</button><button class="pb blue" onclick="sfx('click');shop()">강화</button>
   <div style="display:flex;gap:10px"><button class="pb gray sm" onclick="sfx('click');dex()">도감·배지</button><button class="pb gray sm" onclick="sfx('click');records()">기록</button><button class="pb gray sm" onclick="sfx('click');settings()">설정</button></div></div>`;
-  h+=`<div class="ver">v1.1 · 비공식 팬 게임</div>`;
+  h+=`<div class="ver">v1.2 · 비공식 팬 게임</div>`;
   openOv(h,'scene','home');$('#hero').appendChild(portrait(id,140,'i'));
 }
 const TIPS=['기술 <b>Lv.5</b>에 짝이 되는 <b>지닌 물건</b>을 가지고 있으면 보물상자에서 기술이 진화합니다.','<b>사당</b> 원 안에 4초 머무르면 축복을 고를 수 있습니다.','<b>7분</b>이 지나면 야생 포켓몬이 폭주합니다. 그 전에 체육관에 도전하세요.','보스 체력이 절반 아래로 떨어지면 <b>분노</b>합니다. 빨간 원이 보이면 <b>회피</b>하세요.','길가의 <b>덤불과 상자</b>를 부수면 코인과 오랭열매가 나옵니다.','머리 위 <b>노란 ▲</b>는 내 파트너 타입이 유리한 적입니다.','<b>도감</b>에 등록한 종 수만큼 기술 위력이 영구로 오릅니다.','<b>봉인</b>으로 원하지 않는 카드를 이번 판에서 빼면 원하는 진화를 노리기 쉽습니다.','깃발 단 <b>엘리트</b>는 특성이 있습니다. 대장은 부하를 부르니 먼저 처치하세요.'];
@@ -893,13 +910,13 @@ const tipHTML=()=>`<div class="tip">TIP · ${pick(TIPS)}</div>`;
 function preload(list,onP){let done=0,fail=0;const n=list.length||1;return Promise.all(list.map(([id,a])=>new Promise(res=>{const s=sheet(id,a);const fin=ok=>{done++;if(!ok)fail++;onP&&onP(done/n);res();};if(s.ok)return fin(true);if(s.err)return fin(false);s.cb.push(()=>fin(true));(s.ecb=s.ecb||[]).push(()=>fin(false));}))).then(()=>fail);}
 function withTimeout(p,ms){return Promise.race([p,new Promise(r=>setTimeout(()=>r(-1),ms))]);}
 function boot(){state='menu';
-  openOv(`<div class="boot"><div class="logo"><h1>관동 원정기</h1></div><div class="lbar"><i id="lb"></i></div><div class="ltxt" id="lt">포켓몬을 부르는 중…</div>${tipHTML()}</div><div class="ver">v1.1</div>`,'scene','boot');
+  openOv(`<div class="boot"><div class="logo"><h1>관동 원정기</h1></div><div class="lbar"><i id="lb"></i></div><div class="ltxt" id="lt">포켓몬을 부르는 중…</div>${tipHTML()}</div><div class="ver">v1.2</div>`,'scene','boot');
   const list=[];for(const id in PARTNERS){for(const sp of PARTNERS[id].line)list.push([sp,'i']);}for(const sp of PARTNERS[S.sel].line)list.push([sp,'w']);for(const sp of AREAS[0].pool)list.push([sp,'w']);
   const fonts=(document.fonts&&document.fonts.load)?Promise.all([document.fonts.load('16px Galmuri11'),document.fonts.load('16px Galmuri14')]).catch(()=>{}):Promise.resolve();
   withTimeout(Promise.all([fonts,preload(list,k=>{const b=$('#lb');if(b)b.style.width=Math.round(k*100)+'%';})]),12000).then(r=>{const fail=Array.isArray(r)?r[1]:-1;title(fail);});}
 function title(fail){
   const warn=fail===-1||fail>0?`<div class="tip" style="outline-color:var(--red)">포켓몬 이미지를 일부 불러오지 못했습니다. 인터넷 연결을 확인해 주세요. 그대로 시작해도 됩니다.</div>`:'';
-  openOv(`<div class="boot" id="tt"><div class="logo"><h1>관동 원정기</h1><p>파트너와 함께 관동의 체육관을 정복하라</p></div><span id="tthero"></span>${warn}<div class="press">화면을 터치하세요</div></div><div class="ver">v1.1 · 포켓몬 도트 PMD SpriteCollab · 비공식 팬 게임</div>`,'scene','boot');
+  openOv(`<div class="boot" id="tt"><div class="logo"><h1>관동 원정기</h1><p>파트너와 함께 관동의 체육관을 정복하라</p></div><span id="tthero"></span>${warn}<div class="press">화면을 터치하세요</div></div><div class="ver">v1.2 · 포켓몬 도트 PMD SpriteCollab · 비공식 팬 게임</div>`,'scene','boot');
   $('#tthero').appendChild(portrait(S.sel,120,'i'));
   setTimeout(()=>{$('#ov').addEventListener('click',onTitle,{once:true});},250);}
 function onTitle(){auInit();if(S.set.bgm)bgmStart('title');sfx('click');fade(()=>{if(!S.tut)tutorial(0,false);else home();});}
@@ -978,7 +995,7 @@ function settingsHTML(){const t=(k,n)=>`<div class="tg px"><span>${n}</span><but
 function toggleSet(k){S.set[k]=!S.set[k];save();auInit();auVol();if(k==='bgm'){if(S.set.bgm){if(state==='menu')bgmStart('title');else bgmStart(R.ai,!!R.boss);}else bgmStop();}sfx('click');
   const ov=$('#ov').dataset.k;if(ov==='pause'){paused=false;togglePause();}else settings();}
 function settings(){let h=`<div class="hdr"><button class="back" onclick="sfx('click');home()">‹ 뒤로</button><h2>설정</h2><span></span></div>${settingsHTML()}
-  <div class="sec" style="margin-top:20px">도움말</div><button class="pb gray sm" onclick="sfx('click');tutorial(0,true)">게임 방법 다시 보기</button><div class="sec" style="margin-top:10px">데이터</div><div style="display:flex;gap:10px"><button class="pb gray sm" onclick="sfx('click');exportSave()">내보내기</button><button class="pb gray sm" onclick="sfx('click');importSave()">가져오기</button></div><button class="pb gray sm" onclick="resetAll()">진행 초기화</button><div style="color:var(--dim);font-size:11px;text-align:center;margin-top:12px">관동 원정기 v1.1<br>포켓몬 도트: PMD SpriteCollab · 글꼴: 갈무리<br>팬 게임이며 포켓몬 관련 권리는 원저작자에게 있습니다</div>`;openOv(h,true,'set');}
+  <div class="sec" style="margin-top:20px">도움말</div><button class="pb gray sm" onclick="sfx('click');tutorial(0,true)">게임 방법 다시 보기</button><div class="sec" style="margin-top:10px">데이터</div><div style="display:flex;gap:10px"><button class="pb gray sm" onclick="sfx('click');exportSave()">내보내기</button><button class="pb gray sm" onclick="sfx('click');importSave()">가져오기</button></div><button class="pb gray sm" onclick="resetAll()">진행 초기화</button><div style="color:var(--dim);font-size:11px;text-align:center;margin-top:12px">관동 원정기 v1.2<br>포켓몬 도트: PMD SpriteCollab · 글꼴: 갈무리<br>팬 게임이며 포켓몬 관련 권리는 원저작자에게 있습니다</div>`;openOv(h,true,'set');}
 function exportSave(){let code='';try{code=btoa(unescape(encodeURIComponent(JSON.stringify(S))));}catch(e){}
   openOv(`<div class="hdr"><button class="back" onclick="sfx('click');settings()">‹ 뒤로</button><h2>내보내기</h2><span></span></div><div class="px info">아래 코드를 복사해 두면 다른 기기나 브라우저에서 진행을 이어갈 수 있습니다.</div><textarea id="sv" readonly style="width:100%;height:140px;font-size:10px;background:#0a0f1c;color:var(--txt);border:2px solid #5a6a8a;touch-action:auto;user-select:text;-webkit-user-select:text">${code}</textarea><button class="pb" onclick="copySave()">코드 복사</button>`,true,'exp');}
 function copySave(){const t=$('#sv');t.select();try{navigator.clipboard.writeText(t.value).then(()=>toast('복사했습니다'),()=>toast('길게 눌러 직접 복사해 주세요'));}catch(e){toast('길게 눌러 직접 복사해 주세요');}}
