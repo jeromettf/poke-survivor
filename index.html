@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0d1424">
 <title>관동 원정기</title>
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="관동 원정기">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect x='4' y='1' width='8' height='14' fill='%23000'/%3E%3Crect x='1' y='4' width='14' height='8' fill='%23000'/%3E%3Crect x='2' y='2' width='12' height='12' fill='%23000'/%3E%3Crect x='3' y='3' width='10' height='4' fill='%23e84a3a'/%3E%3Crect x='3' y='9' width='10' height='4' fill='%23f4f4f4'/%3E%3Crect x='6' y='6' width='4' height='4' fill='%23f4f4f4'/%3E%3Crect x='7' y='7' width='2' height='2' fill='%23000'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/galmuri/dist/galmuri.css">
 <style>
 :root{--bg:#0d1424;--pn:#1b2740;--pn2:#26365a;--ln:#f4e8c8;--gold:#ffcc33;--red:#e84a3a;--blue:#4ab8ff;--grn:#5fd068;--txt:#f4ecd8;--dim:#8fa0c0;--sat:env(safe-area-inset-top);--sab:env(safe-area-inset-bottom)}
@@ -68,6 +70,26 @@ img.ico{image-rendering:pixelated;display:block}
 #banner div{display:inline-block;background:var(--pn);border:3px solid var(--ln);box-shadow:0 0 0 3px #000;padding:8px 18px;font-family:'Galmuri14',sans-serif;font-size:20px}
 #banner.warn div{background:repeating-linear-gradient(45deg,#7a1a10 0 10px,#a02818 10px 20px);border-color:#ffd0c0}
 #banner small{display:block;font-family:'Galmuri11',sans-serif;font-size:11px;color:var(--gold);margin-bottom:2px}
+/* 부팅·타이틀 */
+.boot{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;text-align:center}
+.lbar{width:220px;height:16px;background:#0a0f1c;border:2px solid #000;outline:2px solid var(--ln);margin:22px auto 8px}
+.lbar i{display:block;height:100%;width:0;background:linear-gradient(#ffe07a 0 35%,#e8a020 35%)}
+.ltxt{font-size:11px;color:var(--dim)}
+.tip{margin-top:28px;max-width:320px;font-size:12px;color:#c8d4e8;line-height:1.6;background:rgba(10,15,28,.75);border:2px solid #000;outline:2px solid #3a4a6a;padding:8px 12px}
+.tip b{font-weight:normal;color:var(--gold)}
+.press{margin-top:40px;font-family:'Galmuri14',sans-serif;font-size:16px;color:#fff;text-shadow:2px 2px 0 #000;animation:blink 1.4s steps(2,start) infinite}
+@keyframes blink{to{visibility:hidden}}
+.ver{position:fixed;left:0;right:0;bottom:calc(var(--sab) + 10px);text-align:center;font-size:10px;color:rgba(255,255,255,.55);text-shadow:1px 1px 0 #000}
+.tut{text-align:center}.tut .pic{height:150px;display:flex;align-items:center;justify-content:center;gap:12px;margin:10px 0 14px}
+.tut .pic img{image-rendering:pixelated}.tut h3{font-family:'Galmuri14',sans-serif;font-weight:normal;font-size:18px;margin-bottom:8px;color:var(--gold)}
+.tut p{font-size:12px;line-height:1.8;color:#c8d4e8;text-align:left}
+.dots{display:flex;justify-content:center;gap:6px;margin:14px 0}.dots i{width:10px;height:10px;background:#2a3450;border:2px solid #000}.dots i.on{background:var(--gold)}
+.joy{width:84px;height:84px;border:4px solid #fff;border-radius:50%;position:relative;opacity:.85}.joy:after{content:'';position:absolute;left:38px;top:10px;width:24px;height:24px;background:#fff}
+.goal{background:rgba(10,15,28,.82);border:2px solid #000;outline:2px solid var(--gold);padding:7px 10px;font-size:12px;text-align:center;margin:0 0 14px}
+.goal b{font-weight:normal;color:var(--gold)}
+.newrec{display:inline-block;background:var(--gold);color:#000;font-size:9px;padding:0 4px;margin-left:4px;border:1px solid #000;vertical-align:2px}
+.ibox{display:flex;gap:12px;align-items:center;padding:12px;margin-bottom:12px}
+.ibox canvas{image-rendering:pixelated;background:#0a0f1c;border:2px solid #000}
 /* 오버레이 */
 #ov{position:fixed;inset:0;z-index:10;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(5,8,16,.78);padding:calc(var(--sat) + 12px) 14px calc(var(--sab) + 12px);overflow:auto}
 #ov.solid{background:var(--bg) repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 2px,transparent 2px 6px);justify-content:flex-start}
@@ -353,7 +375,7 @@ const fmtN=n=>n>=10000?(n/1000).toFixed(1)+'k':String(Math.round(n));
 
 // ═══════════ 스프라이트·아이콘 ═══════════
 const SHEETS={};
-function sheet(id,a){const k=id+a;if(SHEETS[k])return SHEETS[k];const m=PMD[id][a];const o={ok:false,img:new Image(),fw:m[1],fh:m[2],dur:m[3],tot:m[3].reduce((s,v)=>s+v,0),cb:[]};o.img.onload=()=>{o.ok=true;o.cb.forEach(f=>f());};o.img.src=SPB(id)+m[0]+'-Anim.png';SHEETS[k]=o;return o;}
+function sheet(id,a){const k=id+a;if(SHEETS[k])return SHEETS[k];const m=PMD[id][a];const o={ok:false,img:new Image(),fw:m[1],fh:m[2],dur:m[3],tot:m[3].reduce((s,v)=>s+v,0),cb:[]};o.img.onload=()=>{o.ok=true;o.cb.forEach(f=>f());};o.img.onerror=()=>{o.err=true;(o.ecb||[]).forEach(f=>f());};o.img.src=SPB(id)+m[0]+'-Anim.png';SHEETS[k]=o;return o;}
 function frameAt(s,t){let f=(t*60)%s.tot;for(let i=0;i<s.dur.length;i++){f-=s.dur[i];if(f<0)return i;}return 0;}
 const ROW=[2,1,0,7,6,5,4,3];
 const dirRow=(dx,dy)=>ROW[(Math.round(Math.atan2(dy,dx)/(Math.PI/4))+8)%8];
@@ -449,7 +471,7 @@ function bgmTick(){const c=AU.c;if(!c||!BGM.on)return;while(BGM.next<c.currentTi
   const m=MEL[(i+bar*3)%16];if(m!==null&&(Math.floor(s/64)%2===1))tone(F(ch[m]+24),BGM.tempo*1.8,'square',0.045,null,t0,AU.b);
   if(i%4===2)noise(0.025,0.05,7000,t0,AU.b);if(i%8===4)noise(0.06,0.07,1500,t0,AU.b);
   BGM.next+=BGM.tempo;BGM.step++;}}
-document.addEventListener('pointerdown',()=>{const first=!AU.c;auInit();if(first&&state==='menu'&&S.set.bgm)bgmStart(0,false);},{capture:true});
+document.addEventListener('pointerdown',()=>{const first=!AU.c;auInit();if(first&&state==='menu'&&S.set.bgm&&$('#ov').dataset.k!=='boot')bgmStart(0,false);},{capture:true});
 
 // ═══════════ 저장 ═══════════
 const KEY='kantoSurvivor_v4';
@@ -784,11 +806,11 @@ function closeChest(){sfx('click');buildHud();closeOv();paused=false;afterPick()
 // ═══════════ 결과 ═══════════
 function endRun(win){
   win=win||R.cleared;const et=R.endless?R.t-R.clearT:0;state='over';bgmStop();sfx(win?'win':'die');const a=R.a;const bonus=(win?40+R.ai*30:0)+Math.floor(et/10)*(2+R.ai);const g=R.gold+bonus+Math.floor(R.kills/25);
-  S.gold+=g;S.st.kills+=R.kills;const b=S.best[R.ai]||{t:0,k:0,c:false};b.t=Math.max(b.t,R.t);b.k=Math.max(b.k,R.kills);if(et)b.e=Math.max(b.e||0,et);
+  S.gold+=g;S.st.kills+=R.kills;const b=S.best[R.ai]||{t:0,k:0,c:false};const nrT=R.t>b.t&&b.t>0,nrK=R.kills>b.k&&b.k>0;b.t=Math.max(b.t,R.t);b.k=Math.max(b.k,R.kills);if(et)b.e=Math.max(b.e||0,et);
   const newPika=!!R.newPika,newArea=!!R.newArea;S.best[R.ai]=b;const unl2=(R.newUnl||[]).concat(checkUnlocks());const achN=checkAch();save();
   const ds=Object.entries(R.dmg).sort((x,y)=>y[1]-x[1]);const mx=ds.length?ds[0][1]:1;
   let h=`<div class="lvhdr" style="margin-top:20px"><h2 style="color:${win?'var(--gold)':'var(--red)'}">${R.endless?'무한 모드 종료':win?'지역 클리어!':'눈앞이 캄캄해졌다…'}</h2><p>${a.n}${et?` · 무한 모드 ${fmtT(et)} 버팀`:''}</p></div>
-  <div class="statg"><div class="px dark"><small>생존 시간</small><b>${fmtT(R.t)}</b></div><div class="px dark"><small>레벨</small><b>${R.lv}</b></div><div class="px dark"><small>쓰러뜨린 적</small><b>${R.kills}</b></div><div class="px dark"><small>획득 코인</small><b style="color:var(--gold)">+${g}</b></div></div>
+  <div class="statg"><div class="px dark"><small>생존 시간${nrT?'<span class="newrec">NEW</span>':''}</small><b>${fmtT(R.t)}</b></div><div class="px dark"><small>레벨</small><b>${R.lv}</b></div><div class="px dark"><small>쓰러뜨린 적${nrK?'<span class="newrec">NEW</span>':''}</small><b>${R.kills}</b></div><div class="px dark"><small>획득 코인</small><b style="color:var(--gold)">+${g}</b></div></div>
   <div class="px info"><div class="sec">기술별 피해</div>`;
   for(const [id,v] of ds){const isU=id==='ult';const name=isU?PARTNERS[R.pid].ult:mvName(id);const ic=isU?iconItem('_u',TC[PARTNERS[R.pid].ty],'orb'):iconMove(id,R.moves[id]>=6);const col=isU?'#ffcc33':TC[MOVES[id].ty];
     h+=`<div class="dmg"><img class="ico" src="${ic}"><div class="bar"><div style="display:flex;justify-content:space-between"><span>${name}</span><span>${fmtN(v)}</span></div><div><i style="width:${v/mx*100}%;background:${col}"></i></div></div></div>`;}
@@ -830,10 +852,47 @@ function home(){
   let h=`<div class="hdr"><span></span>${coinHTML()}</div><div class="logo"><h1>관동 원정기</h1><p>야생 포켓몬 무리를 뚫고 관동의 체육관을 정복하라</p></div>
   <div class="stage"><div class="ped"></div><span id="hero"></span></div><div class="pname">${nm(id)}<small>${TN[P2.ty]} 타입 · ${P2.tr}</small></div>
   <div style="display:flex;justify-content:center;gap:6px;margin:-4px 0 16px">${BADGES.map((b,i)=>`<img class="ico" src="${iconBadge(i,hb(i))}" style="width:28px;height:28px">`).join('')}</div>
+  ${goalHTML()}
   <div class="menu"><button class="pb" onclick="sfx('click');prep()">모험 시작</button><button class="pb blue" onclick="sfx('click');shop()">강화</button>
   <div style="display:flex;gap:10px"><button class="pb gray sm" onclick="sfx('click');dex()">도감·배지</button><button class="pb gray sm" onclick="sfx('click');records()">기록</button><button class="pb gray sm" onclick="sfx('click');settings()">설정</button></div></div>`;
+  h+=`<div class="ver">v1.0 · 비공식 팬 게임</div>`;
   openOv(h,'scene','home');$('#hero').appendChild(portrait(id,140,'i'));
 }
+const TIPS=['기술 <b>Lv.5</b>에 짝이 되는 <b>지닌 물건</b>을 가지고 있으면 보물상자에서 기술이 진화합니다.','<b>사당</b> 원 안에 4초 머무르면 축복을 고를 수 있습니다.','<b>7분</b>이 지나면 야생 포켓몬이 폭주합니다. 그 전에 체육관에 도전하세요.','보스 체력이 절반 아래로 떨어지면 <b>분노</b>합니다. 빨간 원이 보이면 <b>회피</b>하세요.','길가의 <b>덤불과 상자</b>를 부수면 코인과 오랭열매가 나옵니다.','머리 위 <b>노란 ▲</b>는 내 파트너 타입이 유리한 적입니다.','<b>도감</b>에 등록한 종 수만큼 기술 위력이 영구로 오릅니다.','<b>봉인</b>으로 원하지 않는 카드를 이번 판에서 빼면 원하는 진화를 노리기 쉽습니다.','깃발 단 <b>엘리트</b>는 특성이 있습니다. 대장은 부하를 부르니 먼저 처치하세요.'];
+const tipHTML=()=>`<div class="tip">TIP · ${pick(TIPS)}</div>`;
+function preload(list,onP){let done=0,fail=0;const n=list.length||1;return Promise.all(list.map(([id,a])=>new Promise(res=>{const s=sheet(id,a);const fin=ok=>{done++;if(!ok)fail++;onP&&onP(done/n);res();};if(s.ok)return fin(true);if(s.err)return fin(false);s.cb.push(()=>fin(true));(s.ecb=s.ecb||[]).push(()=>fin(false));}))).then(()=>fail);}
+function withTimeout(p,ms){return Promise.race([p,new Promise(r=>setTimeout(()=>r(-1),ms))]);}
+function boot(){state='menu';
+  openOv(`<div class="boot"><div class="logo"><h1>관동 원정기</h1></div><div class="lbar"><i id="lb"></i></div><div class="ltxt" id="lt">포켓몬을 부르는 중…</div>${tipHTML()}</div><div class="ver">v1.0</div>`,'scene','boot');
+  const list=[];for(const id in PARTNERS){for(const sp of PARTNERS[id].line)list.push([sp,'i']);}for(const sp of PARTNERS[S.sel].line)list.push([sp,'w']);for(const sp of AREAS[0].pool)list.push([sp,'w']);
+  const fonts=(document.fonts&&document.fonts.load)?Promise.all([document.fonts.load('16px Galmuri11'),document.fonts.load('16px Galmuri14')]).catch(()=>{}):Promise.resolve();
+  withTimeout(Promise.all([fonts,preload(list,k=>{const b=$('#lb');if(b)b.style.width=Math.round(k*100)+'%';})]),12000).then(r=>{const fail=Array.isArray(r)?r[1]:-1;title(fail);});}
+function title(fail){
+  const warn=fail===-1||fail>0?`<div class="tip" style="outline-color:var(--red)">포켓몬 이미지를 일부 불러오지 못했습니다. 인터넷 연결을 확인해 주세요. 그대로 시작해도 됩니다.</div>`:'';
+  openOv(`<div class="boot" id="tt"><div class="logo"><h1>관동 원정기</h1><p>파트너와 함께 관동의 체육관을 정복하라</p></div><span id="tthero"></span>${warn}<div class="press">화면을 터치하세요</div></div><div class="ver">v1.0 · 포켓몬 도트 PMD SpriteCollab · 비공식 팬 게임</div>`,'scene','boot');
+  $('#tthero').appendChild(portrait(S.sel,120,'i'));
+  setTimeout(()=>{$('#ov').addEventListener('click',onTitle,{once:true});},250);}
+function onTitle(){auInit();if(S.set.bgm)bgmStart(0,false);sfx('click');if(!S.tut)tutorial(0,false);else home();}
+const TUT=[
+ {h:'이동과 자동 공격',pic:()=>`<div class="joy"></div><img src="${iconMove('ember')}" style="width:48px;height:48px;border:2px solid #000">`,p:'화면 아무 곳이나 누르고 끌면 그 방향으로 이동합니다. 공격은 전부 자동으로 나갑니다.<br>오른쪽 아래 <b style="font-weight:normal;color:var(--gold)">회피</b>를 누르면 잠깐 무적으로 구르고, 게이지가 차면 <b style="font-weight:normal;color:var(--gold)">궁극기</b>를 쓸 수 있습니다.'},
+ {h:'성장과 기술 진화',pic:()=>`<img src="${iconMove('ember')}" style="width:44px;height:44px;border:2px solid #000"><span style="font-size:20px">+</span><img src="${iconItem('charcoal')}" style="width:44px;height:44px;border:2px solid #000"><span style="font-size:20px">→</span><img src="${iconMove('ember',true)}" style="width:56px;height:56px;border:2px solid var(--gold)">`,p:'레벨이 오르면 카드 3장 중 하나를 골라 기술이나 지닌 물건을 얻습니다.<br>기술을 <b style="font-weight:normal;color:var(--gold)">Lv.5</b>까지 올리고 짝이 되는 물건을 가지고 있으면, 엘리트가 떨어뜨리는 보물상자에서 기술이 진화합니다.'},
+ {h:'목표는 북쪽 체육관',pic:()=>`<img src="${gymCanvas().toDataURL()}" style="width:132px;height:99px"><img src="${iconBadge(0,true)}" style="width:44px;height:44px">`,p:'각 지역의 북쪽 끝에 체육관이 있습니다. 길을 따라 올라가며 강해진 뒤 원 안에 들어가 보스에게 도전하세요.<br>보스를 이기면 <b style="font-weight:normal;color:var(--gold)">배지</b>와 영구 혜택을 얻습니다. <b style="font-weight:normal;color:var(--red)">7분</b>이 지나면 야생 포켓몬이 폭주합니다.'}];
+function tutorial(i,fromSet){const T=TUT[i];const last=i===TUT.length-1;
+  openOv(`<div class="tut" style="margin-top:max(30px,12vh)"><div class="px info"><h3>${T.h}</h3><div class="pic">${T.pic()}</div><p>${T.p}</p></div><div class="dots">${TUT.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div>
+  <button class="pb" onclick="sfx('click');${last?`S.tut=1;save();${fromSet?'settings()':'home()'}`:`tutorial(${i+1},${fromSet})`}">${last?'시작하기':'다음'}</button>${last?'':`<button class="pb gray sm" onclick="sfx('click');S.tut=1;save();${fromSet?'settings()':'home()'}">건너뛰기</button>`}</div>`,true,'tut');}
+function goalHTML(){const nx=AREAS.findIndex((a,i)=>!hb(i));if(nx<0)return `<div class="goal">관동 정복 완료 · 도전 단계와 무한 모드에 도전하세요</div>`;
+  return `<div class="goal">다음 목표 · <b>${AREAS[nx].n} 체육관</b>의 ${nm(AREAS[nx].boss)} · 배지 ${badgeN()}/8</div>`;}
+function intro(pid,ai){const a=AREAS[ai],P2=PARTNERS[pid],em=eff(P2.ty,SP[a.boss][1]),tierN=Math.min(S.selT,tierMax(ai));
+  let h=`<div class="lvhdr" style="margin-top:24px"><p>지역 ${ai+1}</p><h2>${a.n}</h2>${tierN?`<p style="color:var(--gold)">도전 단계 ${'★'.repeat(tierN)}</p>`:''}</div>
+  <div class="px ibox"><span id="ib"></span><div style="flex:1;font-size:12px;line-height:1.7"><div style="color:var(--dim)">체육관 보스</div><div style="font-family:'Galmuri14',sans-serif;font-size:15px">${a.bt} ${nm(a.boss)}</div>
+  <div>${SP[a.boss][1].map(t=>`<span style="color:${TC[t]}">${TN[t]}</span>`).join('·')} 타입 · 상성 <span style="color:${em>1?'var(--grn)':em<1?'var(--red)':'var(--txt)'}">${em>1?'유리':em<1?'불리':'보통'}</span></div><div>권장 Lv.${18+ai*2}</div></div></div>
+  <div class="px info"><div class="sec">이 지역의 야생 포켓몬</div><div id="ip" style="display:flex;flex-wrap:wrap;gap:4px"></div></div>
+  ${tipHTML().replace('class="tip"','class="tip" style="max-width:none;margin-top:0"')}<div class="lbar" style="margin-top:18px"><i id="ilb"></i></div><div class="ltxt" id="ilt" style="text-align:center">불러오는 중…</div>
+  <button class="pb" id="igo" disabled onclick="sfx('click');startRun(${pid},${ai})">모험 시작</button><button class="pb gray sm" onclick="sfx('click');prep()">돌아가기</button>`;
+  openOv(h,true,'intro');$('#ib').appendChild(portrait(a.boss,72,'i'));
+  for(const sp of [...new Set(a.pool.concat(a.late))]){const c=portrait(sp,40,'i');c.style.background='#0a0f1c';c.style.border='2px solid #000';$('#ip').appendChild(c);}
+  const list=[];for(const sp of [...new Set(a.pool.concat(a.late,[a.boss]))])list.push([sp,'w']);for(const sp of P2.line){list.push([sp,'w']);list.push([sp,'i']);}
+  withTimeout(preload(list,k=>{const b=$('#ilb');if(b)b.style.width=Math.round(k*100)+'%';}),10000).then(f=>{const t=$('#ilt'),g=$('#igo');if(!g)return;g.disabled=false;if(t)t.textContent=f?'일부 이미지를 불러오지 못했습니다. 그대로 시작할 수 있습니다':'준비 완료';});}
 function prep(){
   const unl=id=>!PARTNERS[id].lock||S.unl[id];
   if(!unl(S.sel))S.sel=4;if(S.selA>S.area)S.selA=S.area;
@@ -847,7 +906,7 @@ function prep(){
     h+=`<button class="area ${S.selA===i?'sel':''} ${lk?'lock':''}" ${lk?'disabled':''} onclick="sfx('click');S.selA=${i};save();prep()"><span class="sw" style="background:${THEMES[a.th].sw}"></span><span class="t"><b>${a.n}</b><small>${lk?'이전 지역을 클리어하면 열립니다':`보스 ${nm(a.boss)}${b?` · 최고 ${fmtT(b.t)} · ${b.k}마리`:''}`}</small></span><span class="st">${b&&b.c?`<img class="ico" src="${iconBadge(i,true)}" style="width:22px;height:22px;display:inline-block;vertical-align:middle">${b.tier>0?'★'.repeat(b.tier):''}`:''}</span></button>`;});
   const tmx=tierMax(S.selA);if(S.selT>tmx)S.selT=tmx;
   h+=`<div class="sec" style="margin-top:10px">도전 단계</div><div class="tools" style="margin-bottom:6px">${[0,1,2,3].map(t=>`<button class="${S.selT===t?'on':''}" ${t>tmx?'disabled':''} onclick="sfx('click');S.selT=${t};save();prep()">${t?'★'.repeat(t):'기본'}</button>`).join('')}</div><div style="color:var(--dim);font-size:11px;margin-bottom:8px">${S.selT?`적 체력·공격 +${S.selT*50}%, 코인 +${S.selT*60}%`:'지역을 클리어하면 다음 단계가 열립니다'}</div>`;
-  h+=`<div class="bot"><button class="pb" onclick="sfx('click');startRun(S.sel,S.selA)">출발!</button></div>`;
+  h+=`<div class="bot"><button class="pb" onclick="sfx('click');intro(S.sel,S.selA)">출발!</button></div>`;
   openOv(h,true,'prep');
   const pg=$('#pg');
   const LOCKT={25:'상록숲을 클리어하면 합류합니다',92:'도감 20종을 등록하면 합류합니다',147:'배지 4개를 모으면 합류합니다'};
@@ -887,7 +946,7 @@ function settingsHTML(){const t=(k,n)=>`<div class="tg px"><span>${n}</span><but
 function toggleSet(k){S.set[k]=!S.set[k];save();auInit();auVol();if(k==='bgm'){if(S.set.bgm){if(state==='menu')bgmStart(0,false);else bgmStart(R.ai,!!R.boss);}else bgmStop();}sfx('click');
   const ov=$('#ov').dataset.k;if(ov==='pause'){paused=false;togglePause();}else settings();}
 function settings(){let h=`<div class="hdr"><button class="back" onclick="sfx('click');home()">‹ 뒤로</button><h2>설정</h2><span></span></div>${settingsHTML()}
-  <div class="sec" style="margin-top:20px">데이터</div><button class="pb gray sm" onclick="resetAll()">진행 초기화</button><div style="color:var(--dim);font-size:11px;text-align:center;margin-top:12px">포켓몬 도트: PMD SpriteCollab · 글꼴: 갈무리<br>팬 게임이며 포켓몬 관련 권리는 원저작자에게 있습니다</div>`;openOv(h,true,'set');}
+  <div class="sec" style="margin-top:20px">도움말</div><button class="pb gray sm" onclick="sfx('click');tutorial(0,true)">게임 방법 다시 보기</button><div class="sec" style="margin-top:10px">데이터</div><button class="pb gray sm" onclick="resetAll()">진행 초기화</button><div style="color:var(--dim);font-size:11px;text-align:center;margin-top:12px">관동 원정기 v1.0<br>포켓몬 도트: PMD SpriteCollab · 글꼴: 갈무리<br>팬 게임이며 포켓몬 관련 권리는 원저작자에게 있습니다</div>`;openOv(h,true,'set');}
 let resetArm=0;function resetAll(){if(Date.now()-resetArm>2500){resetArm=Date.now();toast('한 번 더 누르면 모든 진행이 지워집니다');return;}try{localStorage.removeItem(KEY);localStorage.removeItem('kantoSurvivor_v3');}catch(e){}location.reload();}
 
 // ═══════════ HUD ═══════════
@@ -1037,7 +1096,7 @@ function loop(ts){const dt=Math.min(0.05,(ts-last)/1000||0);last=ts;
   else{ctx.setTransform(1,0,0,1,0,0);ctx.imageSmoothingEnabled=false;if(!SCN||SCN.w!==cv.width||SCN.h!==cv.height)SCN=menuScene();ctx.drawImage(SCN.c,0,0,cv.width,cv.height);}
   hud(dt);requestAnimationFrame(loop);}
 document.addEventListener('visibilitychange',()=>{if(document.hidden){if(state==='play'&&!paused)togglePause();if(AU.c)AU.c.suspend();}else if(AU.c)AU.c.resume();});
-load();home();requestAnimationFrame(loop);
+load();boot();requestAnimationFrame(loop);
 </script>
 </body>
 </html>
